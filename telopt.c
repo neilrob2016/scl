@@ -302,6 +302,7 @@ void sendEnviroment()
 	/* Username should never be NULL but you never know */
 	if (!flags.send_enviroment || (!xdisplay && !username)) goto ERROR;
 
+	sendOptReply(TELNET_WILL,TELOPT_NEW_ENVIRON);
 	PRINT_SUBSEND(TELNET_SB,TELOPT_NEW_ENVIRON);
 
 	sprintf((char *)optout,"%c%c%c%c",

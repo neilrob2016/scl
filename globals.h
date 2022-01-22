@@ -29,7 +29,7 @@
 #include <openssl/err.h>
 #endif
 
-#define VERSION "20211216"
+#define VERSION "20220122"
 
 #ifndef IPPROTO_SCTP
 #define IPPROTO_SCTP 132
