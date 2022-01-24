@@ -53,7 +53,7 @@ void parseCmdLine(int argc, char **argv)
 		"ssl",
 		"fe",
 		"flm",
-		"ne",
+		"notel",
 
 		"lp",
 		"kasecs",
@@ -85,7 +85,7 @@ void parseCmdLine(int argc, char **argv)
 		OPT_SSL,
 		OPT_FE,
 		OPT_FLM,
-		OPT_NE,
+		OPT_NOTEL,
 
 		OPT_LP,
 		OPT_KASECS,
@@ -119,7 +119,7 @@ void parseCmdLine(int argc, char **argv)
 	flags.raw = 1;
 	flags.log_writes = 1;
 	flags.select_stdin = 1;
-	flags.send_enviroment = 1;
+	flags.send_telopt = 1;
 
 	lport = 0;
 	host = NULL;
@@ -226,8 +226,8 @@ void parseCmdLine(int argc, char **argv)
 			flags.force_linemode = 1;
 			break;
 
-		case OPT_NE:
-			flags.send_enviroment = 0;
+		case OPT_NOTEL:
+			flags.send_telopt = 0;
 			break;
 
 		case OPT_LP:
@@ -356,8 +356,8 @@ void parseCmdLine(int argc, char **argv)
 	       "       [-ssl]            : Use the Secure Sockets Layer.\n"
 	       "       [-fe]             : Force echoing.\n"
 	       "       [-flm]            : Force line mode.\n"
-	       "       [-ne]             : Don't send enviroment data, ie X display and\n"
-	       "                           username if requested by telnet server.\n"
+	       "       [-notel]          : Don't send any telnet negotiation information.\n"
+	       "                           Eg: terminal type, username, X display.\n"
 	       "       [-lp <port>]      : Local port. Not for unix sockets.\n"
 	       "       [-kasecs <secs>]  : Send keepalive string every <secs> seconds after\n"
 	       "                           you last sent data. Useful for some MUDs and chat\n"

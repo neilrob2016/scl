@@ -106,13 +106,17 @@ void teloptDo(u_char subopt)
 	{
 	case TELOPT_TTYPE:
 		/* Request to send terminal type comes in a sub option command 
-		   from the server, here we just agree to do it */
-		sendOptReply(TELNET_WILL,TELOPT_TTYPE);
+		   from the server, here we just agree (or not) to do it */
+		sendOptReply(
+			flags.send_telopt ? TELNET_WILL : TELNET_WONT,
+			TELOPT_TTYPE);
 		break;
 
 	case TELOPT_XDISPLOC:
-		/* As above only acknowledge (or not if X display not set) */
-		sendOptReply(xdisplay ? TELNET_WILL : TELNET_WONT,TELOPT_XDISPLOC);
+		/* As above only acknowledge */
+		sendOptReply(
+			(xdisplay && flags.send_telopt) ? TELNET_WILL : TELNET_WONT,
+			TELOPT_XDISPLOC);
 		break;
 
 	case TELOPT_NAWS:
@@ -193,9 +197,13 @@ void teloptSubneg(u_char *s, int *i)
 /*** Send window size info ***/
 void sendNaws()
 {
-	/* Send will reply them send window size info immediately after */
-	sendOptReply(TELNET_WILL,TELOPT_NAWS);
-	sendTermSize(0);
+	if (flags.send_telopt)
+	{
+		/* Confirm then send window size info immediately after */
+		sendOptReply(TELNET_WILL,TELOPT_NAWS);
+		sendTermSize(0);
+	}
+	else sendOptReply(TELNET_WONT,TELOPT_NAWS);
 }
 
 
@@ -223,7 +231,7 @@ void sendTerminal()
 void sendDisplay()
 {
 	/* Should never be request if null but just in case */
-	if (!xdisplay) return;
+	if (!xdisplay || !flags.send_telopt) return;
 
 	PRINT_SUBSEND(TELNET_SB,TELOPT_XDISPLOC);
 
@@ -300,7 +308,7 @@ void sendEnviroment()
 	int len;
 
 	/* Username should never be NULL but you never know */
-	if (!flags.send_enviroment || (!xdisplay && !username)) goto ERROR;
+	if (!flags.send_telopt || (!xdisplay && !username)) goto ERROR;
 
 	sendOptReply(TELNET_WILL,TELOPT_NEW_ENVIRON);
 	PRINT_SUBSEND(TELNET_SB,TELOPT_NEW_ENVIRON);
