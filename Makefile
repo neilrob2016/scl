@@ -1,3 +1,4 @@
+
 UNAME := $(shell uname -s)
 ifeq ($(UNAME),Darwin)
 	INCPATH=-I/usr/local/openssl/include
@@ -5,13 +6,19 @@ ifeq ($(UNAME),Darwin)
 endif
 CC=cc
 
+# With SSL installed
 ARGS=$(INCPATH) -Wall -pedantic -D IP6 -D SCTP -D SSLYR
-LIBS=$(LIBPATH) -lssl -lcrypto
+LIBS=$(LIBPATH) -lcrypto -lssl
+
+# Without SSL installed
+#ARGS=$(INCPATH) -Wall -pedantic -D IP6 -D SCTP 
+#LIBS=$(LIBPATH) -lcrypto
+
 OBJS= main.o io.o network.o telopt.o ssl.o term.o
 BIN=scl
 
 $(BIN): build_date $(OBJS) Makefile
-	$(CC) $(LIBS) $(OBJS) -o $(BIN)
+	$(CC) $(OBJS) $(LIBS) -o $(BIN)
 
 main.o: main.c globals.h build_date.h
 	$(CC) $(ARGS) -c main.c

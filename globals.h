@@ -29,7 +29,7 @@
 #include <openssl/err.h>
 #endif
 
-#define VERSION "20220124"
+#define VERSION "20221206"
 
 #ifndef IPPROTO_SCTP
 #define IPPROTO_SCTP 132
@@ -119,7 +119,7 @@ struct st_flags
 	unsigned teldump           : 1;
 	unsigned quit_on_stdin_eof : 1;
 	unsigned join_multicast    : 1;
-	unsigned send_telopt       : 1;
+	unsigned send_telenv       : 1;
 
 	/* Runtime flags */
 	unsigned using_telopt      : 1;

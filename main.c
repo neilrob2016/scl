@@ -43,66 +43,82 @@ void parseCmdLine(int argc, char **argv)
 	int i,o;
 	char *opt[] = 
 	{
+		/* 0 */
 		"ip6",
 		"tcp",
 		"udp",
 		"sctp",
 		"uxs",
 
+		/* 5 */
 		"uxd",
 		"ssl",
 		"fe",
 		"flm",
-		"notel",
+		"noenv",
 
+		/* 10 */
+		"user",
 		"lp",
 		"kasecs",
 		"kastr",
 		"log",
-		"lr",
 
+		/* 15 */
+		"lr",
 		"la",
 		"lt",
 		"qc",
 		"noraw",
-		"nltype",
 
+		/* 20 */
+		"nltype",
 		"hexdump",
 		"teldump",
 		"qseof",
 		"mcast",
+
+		/* 25 */
 		"ver"
 	};
 	enum 
 	{
+		/* 0 */
 		OPT_IP6,
 		OPT_TCP,
 		OPT_UDP,
 		OPT_SCTP,
 		OPT_UXS,
 
+		/* 5 */
 		OPT_UXD,
 		OPT_SSL,
 		OPT_FE,
 		OPT_FLM,
-		OPT_NOTEL,
+		OPT_NOENV,
 
+		/* 10 */
+		OPT_USER,
 		OPT_LP,
 		OPT_KASECS,
 		OPT_KASTR,
 		OPT_LOG,
-		OPT_LR,
 
+		/* 15 */
+		OPT_LR,
 		OPT_LA,
 		OPT_LT,
 		OPT_QC,
 		OPT_NORAW,
-		OPT_NLTYPE,
 
+		/* 20 */
+		OPT_NLTYPE,
 		OPT_HEXDUMP,
 		OPT_TELDUMP,
 		OPT_QSEOF,
 		OPT_MCAST,
+
+		/* 25 */
 		OPT_VER,
 
 		NUM_OPTS
@@ -119,7 +135,7 @@ void parseCmdLine(int argc, char **argv)
 	flags.raw = 1;
 	flags.log_writes = 1;
 	flags.select_stdin = 1;
-	flags.send_telopt = 1;
+	flags.send_telenv = 1;
 
 	lport = 0;
 	host = NULL;
@@ -135,6 +151,7 @@ void parseCmdLine(int argc, char **argv)
 	log_filename = NULL;
 	log_open_flags = O_WRONLY | O_CREAT | O_TRUNC;
 	nltype = NLTYPE;
+	username = NULL;
 
 	/* Go through arguments */
 	for(i=1;i < argc;++i) 
@@ -226,8 +243,13 @@ void parseCmdLine(int argc, char **argv)
 			flags.force_linemode = 1;
 			break;
 
-		case OPT_NOTEL:
-			flags.send_telopt = 0;
+		case OPT_NOENV:
+			flags.send_telenv = 0;
+			break;
+
+		case OPT_USER:
+			if (++i == argc) goto USAGE;
+			username = strdup(argv[i]);
 			break;
 
 		case OPT_LP:
@@ -356,8 +378,12 @@ void parseCmdLine(int argc, char **argv)
 	       "       [-ssl]            : Use the Secure Sockets Layer.\n"
 	       "       [-fe]             : Force echoing.\n"
 	       "       [-flm]            : Force line mode.\n"
-	       "       [-notel]          : Don't send any telnet negotiation information.\n"
-	       "                           Eg: terminal type, username, X display.\n"
+	       "       [-noenv]          : Don't send enviroment information terminal type,\n"
+	       "                           username, X display and window size to a telnet\n"
+	       "                           server.\n"
+	       "       [-user <name>]    : Send this username instead of actual username when\n"
+	       "                           logging into a telnet server that requests\n"
+	       "                           enviroment variables.\n"
 	       "       [-lp <port>]      : Local port. Not for unix sockets.\n"
 	       "       [-kasecs <secs>]  : Send keepalive string every <secs> seconds after\n"
 	       "                           you last sent data. Useful for some MUDs and chat\n"
@@ -401,8 +427,11 @@ void init()
 	xdisplay = getenv("DISPLAY");
 	if (xdisplay && !strlen(xdisplay)) xdisplay = NULL;
 
-	pwd = getpwuid(getuid());
-	username = pwd ? strdup(pwd->pw_name) : NULL;
+	if (!username)
+	{
+		pwd = getpwuid(getuid());
+		username = pwd ? strdup(pwd->pw_name) : NULL;
+	}
 
 	/* Store current keyboard settings */
 	if (isatty(STDIN)) tcgetattr(STDIN,&term_settings);
