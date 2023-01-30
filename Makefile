@@ -7,7 +7,8 @@ endif
 CC=cc
 
 # With SSL installed
-ARGS=$(INCPATH) -Wall -pedantic -D IP6 -D SCTP -D SSLYR
+ARGS=$(INCPATH) -Wall -Wextra -pedantic -D IP6 -D SCTP -D SSLYR
+#ARGS=$(INCPATH) -Wall -pedantic -D IP6 -D SCTP -D SSLYR
 LIBS=$(LIBPATH) -lcrypto -lssl
 
 # Without SSL installed

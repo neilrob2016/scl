@@ -162,7 +162,8 @@ void parseCmdLine(int argc, char **argv)
 			else 
 			{
 #ifdef IP6
-				/* If port already set... */
+				/* If port already set... Comparing the
+				   actual pointer address so yes this is ok */
 				if (portstr != (char *)DEFAULT_PORTSTR)
 				{
 					fprintf(stderr,"ERROR: Unexpected argument '%s'.\n",argv[i]);
@@ -306,6 +307,7 @@ void parseCmdLine(int argc, char **argv)
 				fputs("ERROR: Invalid quit character.\n",stderr);
 				exit(1);
 			}
+			break;
 			
 		case OPT_NORAW:
 			flags.raw = 0;

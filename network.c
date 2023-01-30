@@ -1,5 +1,6 @@
 #include "globals.h"
 
+
 /*** Set up socket ***/
 void doConnect()
 {
@@ -346,8 +347,8 @@ void readSock()
 
 		} while(SSL_pending(ssl_handle));
 
+		return;
 	}
-	else
 #endif
 	if (flags.join_multicast)
 	{
