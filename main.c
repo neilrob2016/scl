@@ -12,8 +12,9 @@
 #include "globals.h"
 #include "build_date.h"
 
-void init();
+void version();
 void parseCmdLine(int argc, char **argv);
+void init();
 void afterConnect();
 void mainloop();
 
@@ -232,7 +233,7 @@ void parseCmdLine(int argc, char **argv)
 			flags.ssl = 1;
 			break;
 #else
-			fputs("ERROR: Secure Sockets Layer is not supported in this build.\n",stderr);
+			fputs("ERROR: SSL is not supported in this build.\n",stderr);
 			exit(1);
 #endif
 
@@ -342,9 +343,7 @@ void parseCmdLine(int argc, char **argv)
 			break;
 
 		case OPT_VER:
-			puts("\n*** Simple Client ***\n");
-			printf("Version   : %s\n",VERSION);
-			printf("Build date: %s\n\n",BUILD_DATE);
+			version();
 			exit(0);
 
 		default:
@@ -411,6 +410,34 @@ void parseCmdLine(int argc, char **argv)
 	       "       [-ver]            : Print version and build date then exit.\n",
 		argv[0],DEFAULT_PORT,KASECS,CONTROL_RSQB,NLTYPE);
 	exit(1);
+}
+
+
+
+
+void version()
+{
+	int cnt = 0;
+	puts("\n*** Simple Client ***\n");
+	printf("Version      : %s\n",VERSION);
+	printf("Build date   : %s\n",BUILD_DATE);
+	printf("Build options: ");
+#ifdef SSLYR
+	printf("SSL ");
+	++cnt;
+#endif
+#ifdef IP6
+	printf("IP6 ");
+	++cnt;
+#endif
+#ifdef SCTP
+	printf("SCTP ");
+	++cnt;
+#endif
+	if (cnt)
+		puts("\n");
+	else
+		puts("<none>\n");
 }
 
 

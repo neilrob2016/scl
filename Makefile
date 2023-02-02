@@ -15,28 +15,29 @@ LIBS=$(LIBPATH) -lcrypto -lssl
 #ARGS=$(INCPATH) -Wall -pedantic -D IP6 -D SCTP 
 #LIBS=$(LIBPATH) -lcrypto
 
-OBJS= main.o io.o network.o telopt.o ssl.o term.o
+OBJS=main.o io.o network.o telopt.o ssl.o term.o
+DEPS=globals.h Makefile
 BIN=scl
 
 $(BIN): build_date $(OBJS) Makefile
 	$(CC) $(OBJS) $(LIBS) -o $(BIN)
 
-main.o: main.c globals.h build_date.h
+main.o: main.c build_date.h $(DEPS)
 	$(CC) $(ARGS) -c main.c
 
-io.o: io.c globals.h
+io.o: io.c $(DEPS)
 	$(CC) $(ARGS) -c io.c
 
-network.o: network.c globals.h
+network.o: network.c $(DEPS)
 	$(CC) $(ARGS) -c network.c
 
-telopt.o: telopt.c globals.h
+telopt.o: telopt.c $(DEPS)
 	$(CC) $(ARGS) -c telopt.c
 
-ssl.o: ssl.c globals.h
+ssl.o: ssl.c $(DEPS)
 	$(CC) $(ARGS) -c ssl.c
 
-term.o: term.c globals.h
+term.o: term.c $(DEPS)
 	$(CC) $(ARGS) -c term.c
 
 build_date:

@@ -319,7 +319,7 @@ void readSock()
 	socklen_t size;
 
 #ifdef SSLYR
-	/* flags.ssl can never be set if SSLYR not set */
+	/* flags.ssl can never be set if SSL not set */
 	if (flags.ssl)
 	{
 		/* SSL can buffer data which we might not have read yet but 
@@ -330,13 +330,13 @@ void readSock()
 		{
 			ERR_clear_error();
 
-			if (!(bufflen = SSL_read(ssl_handle,buff,BUFFSIZE)))
-				doExit(0);
-
-			if (bufflen < 0)
+			if ((bufflen = SSL_read(ssl_handle,buff,BUFFSIZE)) < 1)
 			{
 				switch(SSL_get_error(ssl_handle,bufflen))
 				{
+				case SSL_ERROR_ZERO_RETURN:
+					doExit(0);
+
 				case SSL_ERROR_WANT_READ:
 				case SSL_ERROR_WANT_WRITE:
 					continue;
@@ -379,6 +379,7 @@ void writeSock(u_char *data, int len)
 	int total;
 	int cnt;
 	int wlen;
+	int ret;
 
 	if (len < 1) return;
 
@@ -391,9 +392,9 @@ void writeSock(u_char *data, int len)
 
 		do
 		{
-			if ((len = SSL_write(ssl_handle,data,len)) < 1)
+			if ((ret = SSL_write(ssl_handle,data,len)) < 1)
 			{
-				switch(SSL_get_error(ssl_handle,len))
+				switch(SSL_get_error(ssl_handle,ret))
 				{
 				case SSL_ERROR_WANT_READ:
 				case SSL_ERROR_WANT_WRITE:
@@ -401,10 +402,9 @@ void writeSock(u_char *data, int len)
 
 				default:
 					sslError("SSL_write");
-					doExit(0);
 				}
 			}
-		} while(len < 1);
+		} while(ret < 1);
 		return;
 	}
 #endif

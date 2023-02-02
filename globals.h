@@ -29,7 +29,7 @@
 #include <openssl/err.h>
 #endif
 
-#define VERSION "20230128"
+#define VERSION "20230131"
 
 #ifndef IPPROTO_SCTP
 #define IPPROTO_SCTP 132
@@ -145,7 +145,7 @@ void hexdump(u_char *buff, int len, int recvd);
 
 /* ssl.c */
 void sslConnect();
-void sslError();
+void sslError(char *func);
 
 /* telopt.c */
 void telopt(u_char *s,int *i);
